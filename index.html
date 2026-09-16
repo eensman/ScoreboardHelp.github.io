@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Scoreboard Help — South Forsyth Baseball</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Open+Sans:wght@400;600&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Open Sans', sans-serif;
+    background: #001f5b;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0;
+  }
+
+  #app {
+    width: 100%;
+    max-width: 480px;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    background: #f4f7ff;
+  }
+
+  /* Header */
+  #header {
+    background: #001f5b;
+    padding: 14px 16px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+  }
+
+  #header-top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding-bottom: 12px;
+  }
+
+  #logo {
+    width: 56px;
+    height: 56px;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
+    flex-shrink: 0;
+  }
+
+  #header-titles { flex: 1; }
+
+  #school-name {
+    font-family: 'Oswald', sans-serif;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: white;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    line-height: 1.1;
+  }
+
+  #sub-name {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: #7ab3f5;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-top: 3px;
+  }
+
+  #blue-bar {
+    background: #1a5adc;
+    width: calc(100% + 32px);
+    margin-left: -16px;
+    padding: 7px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  #blue-bar svg { flex-shrink: 0; }
+
+  #blue-bar span {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: white;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  /* Chat area */
+  #messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  #messages::-webkit-scrollbar { width: 4px; }
+  #messages::-webkit-scrollbar-thumb { background: #c0d0f0; border-radius: 2px; }
+
+  .msg-row { display: flex; gap: 8px; align-items: flex-start; animation: fadeUp 0.2s ease; }
+  .msg-row.user { flex-direction: row-reverse; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .av {
+    width: 28px; height: 28px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 700; flex-shrink: 0; margin-top: 2px;
+    font-family: 'Oswald', sans-serif; letter-spacing: 0.5px;
+  }
+  .av.bot { background: #001f5b; color: white; }
+  .av.usr { background: #1a5adc; color: white; }
+
+  .bubble {
+    max-width: 82%; padding: 9px 13px;
+    border-radius: 12px; font-size: 14px; line-height: 1.55;
+  }
+  .bubble.bot {
+    background: white;
+    border: 1px solid #d0dcf5;
+    color: #1a1a18;
+    border-top-left-radius: 4px;
+    box-shadow: 0 1px 4px rgba(0,31,91,0.08);
+  }
+  .bubble.usr {
+    background: #1a5adc;
+    color: white;
+    border-top-right-radius: 4px;
+  }
+  .bubble kbd {
+    display: inline-block;
+    background: #001f5b; color: white;
+    font-family: monospace; font-size: 11px; font-weight: 600;
+    padding: 1px 6px; border-radius: 4px; white-space: nowrap;
+  }
+  .bubble ol { padding-left: 16px; margin-top: 4px; display: flex; flex-direction: column; gap: 3px; }
+  .bubble strong { font-weight: 600; color: #001f5b; }
+  .bubble.usr strong { color: white; }
+
+  .dot-typing { display: flex; gap: 4px; align-items: center; padding: 4px 2px; }
+  .dot-typing span { width: 6px; height: 6px; border-radius: 50%; background: #1a5adc; animation: dta 1.2s infinite; }
+  .dot-typing span:nth-child(2) { animation-delay: 0.2s; }
+  .dot-typing span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes dta { 0%,60%,100%{transform:translateY(0);opacity:0.4} 30%{transform:translateY(-5px);opacity:1} }
+
+  /* Quick questions */
+  #quick-area {
+    padding: 12px 16px;
+    border-top: 2px solid #1a5adc;
+    background: white;
+  }
+
+  #quick-label {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #1a5adc;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  #quick-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+
+  .qbtn {
+    background: #f4f7ff;
+    border: 1px solid #d0dcf5;
+    border-radius: 8px; padding: 8px 10px;
+    font-size: 12px; color: #001f5b; cursor: pointer;
+    text-align: left; line-height: 1.35;
+    transition: all 0.15s; font-family: 'Open Sans', sans-serif;
+    font-weight: 600;
+  }
+  .qbtn:hover { background: #001f5b; color: white; border-color: #001f5b; }
+  .qbtn:active { transform: scale(0.97); }
+
+  /* Input */
+  #input-area {
+    padding: 10px 16px 20px;
+    background: white;
+    border-top: 1px solid #d0dcf5;
+    display: flex; gap: 8px; align-items: flex-end;
+  }
+
+  #msg-input {
+    flex: 1;
+    border: 1.5px solid #d0dcf5;
+    border-radius: 8px; padding: 9px 12px;
+    font-size: 14px; font-family: 'Open Sans', sans-serif;
+    color: #1a1a18; background: #f4f7ff;
+    resize: none; min-height: 40px; max-height: 90px;
+    outline: none; line-height: 1.4;
+  }
+  #msg-input:focus { border-color: #1a5adc; background: white; }
+  #msg-input::placeholder { color: #8899bb; }
+
+  #send-btn {
+    width: 40px; height: 40px; border-radius: 8px;
+    border: none; background: #1a5adc;
+    cursor: pointer; display: flex; align-items: center;
+    justify-content: center; color: white; flex-shrink: 0;
+    transition: background 0.15s;
+  }
+  #send-btn:hover { background: #001f5b; }
+  #send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .err-bubble {
+    background: #fff0f0; color: #a32d2d;
+    border-radius: 8px; padding: 8px 12px;
+    font-size: 13px; border: 1px solid #f09595;
+  }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <div id="header">
+    <div id="header-top">
+      <img id="logo" src="data:image/png;base64,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" alt="War Eagles">
+      <div id="header-titles">
+        <div id="school-name">South Forsyth<br>High School</div>
+        <div id="sub-name">War Eagles Baseball</div>
+      </div>
+    </div>
+    <div id="blue-bar">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M7 10h4M13 10h4"/></svg>
+      <span>Scoreboard Operator Help</span>
+    </div>
+  </div>
+
+  <div id="messages"></div>
+
+  <div id="quick-area">
+    <div id="quick-label">Quick Questions</div>
+    <div id="quick-grid">
+      <button class="qbtn" onclick="askQ('How do I reset the scoreboard for a new game?')">New game reset</button>
+      <button class="qbtn" onclick="askQ('How do I set the game clock to a specific time?')">Set the clock</button>
+      <button class="qbtn" onclick="askQ('How do I add runs for the team currently at bat?')">Add runs</button>
+      <button class="qbtn" onclick="askQ('How do I correct runs logged for a specific inning using SET RUNS / INNING?')">Fix inning runs</button>
+      <button class="qbtn" onclick="askQ('How do I set or correct the total runs directly?')">Fix total runs</button>
+      <button class="qbtn" onclick="askQ('How do I advance to the next half-inning or change the inning?')">Change half-inning</button>
+      <button class="qbtn" onclick="askQ('How do I jump directly to a specific inning?')">Jump to inning</button>
+      <button class="qbtn" onclick="askQ('How do I track hits and errors?')">Hits &amp; errors</button>
+      <button class="qbtn" onclick="askQ('How do I update ball, strike, and out counts?')">Ball / Strike / Out</button>
+      <button class="qbtn" onclick="askQ('How do I use the pitch count feature?')">Pitch count</button>
+      <button class="qbtn" onclick="askQ('How do I set electronic team names on the scoreboard?')">Set team names</button>
+      <button class="qbtn" onclick="askQ('How do I run a lamp test or blank test?')">Lamp / blank test</button>
+    </div>
+  </div>
+
+  <div id="input-area">
+    <textarea id="msg-input" placeholder="Type your question and press Enter…" rows="1"></textarea>
+    <button id="send-btn" onclick="sendMsg()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+    </button>
+  </div>
+
+</div>
+
+<script>
+const PROXY_URL = 'https://scoreboard-proxy.ensman.workers.dev/chat';
+
+const SYSTEM = `You are a quick-help assistant for the Electro-Mech CX-402 Line-Score Baseball control console (LINESCORE5, software version 4.0.2). Answer ONLY questions about operating this specific console. If asked something unrelated, say you can only help with this console.
+
+KEY OPERATIONS:
+- [RUNS +1] — adds 1 run to the team currently at bat; also updates the Runs-By-Inning display for the current inning
+- [HITS +1] — adds 1 hit to team currently at bat; flashes Hit indicator 4 times
+- [ERRORS +1] — adds 1 error to team NOT currently at bat; flashes Error indicator 4 times
+- [BALL +1] — adds 1 to Ball count
+- [STRIKE +1] — adds 1 to Strike count
+- [OUT +1] — adds 1 to Out count
+- [HORN] — sounds horn 2 seconds
+- [CLOCK ON / OFF] — starts/stops game clock
+- [CLEAR / FLASH HIT] — flashes Hit indicator; also cancels/exits input entry
+- [ENTER / FLASH ERROR] — flashes Error indicator; also confirms input
+
+INNING CONTROL:
+- [INC. INNING TOP / BOT] — advances to next half-inning. First press = Top 1st, second = Bottom 1st, third = Top 2nd, etc.
+- [SET INNING TOP / BOT] — jump directly to any inning. Prompts: SET INNING <xx> (enter number, ENTER), then 1=BOT 0=TOP
+
+SCORE / RUNS CORRECTION:
+- [SET TOTAL RUNS] — directly set total runs. Prompts TOT RUNS TOP<00> then TOT RUNS BOT<00>. Press ENTER to skip one.
+- [SET RUNS / INNING] — edit per-inning run display. Prompts: EDIT INNING <xx>, SET RUNS TOP <x>, SET RUNS BOT <x>
+
+HITS / ERRORS CORRECTION:
+- [SET TOTAL HITS] — directly set total hits. Prompts TOT HITS TOP<00> then TOT HITS BOT<00>
+- [SET TOTAL ERRORS] — directly set total errors. Prompts TOT ERRS TOP<00> then TOT ERRS BOT<00>
+- [ASSIGN ERROR] — assign error to specific fielder. Prompt: ERR POSITION <0>
+  Positions: 1=Pitcher 2=Catcher 3=1st Base 4=2nd Base 5=3rd Base 6=Short Stop 7=Left Field 8=Center Field 9=Right Field
+
+PITCH COUNT:
+- [PITCHES +1] — increments pitch count for team NOT currently at bat
+- [SET PITCH COUNTS] — directly set pitch counts. Prompts: TOP PITCHES<000> then BOT PITCHES<000>
+
+BATTER NUMBER:
+- [SET BATTER] — set current batter number. Prompt: BATTER NUM <00>
+
+CLOCK (only when clock is NOT running):
+- [SET CLOCK] digits [ENTER] — e.g. [SET CLOCK][5][3][0][ENTER] = 5:30
+- [CLOCK UP / DOWN][1][ENTER] = count up; [0][ENTER] = count down
+- [.1 SEC ON / OFF] — toggles tenth-of-second display in final minute
+- [AUTO HORN] — toggles auto horn at period end (1=auto, 0=off)
+- [TIME OF DAY] — use clock to show time of day. Exit with [TIME OF DAY][0][ENTER]
+
+NEW GAME functions (clock must be stopped):
+- [NEW GAME][1][ENTER] = reset all data
+- [NEW GAME][2] = set brightness 50-100%
+- [NEW GAME][4] = Blank Test (all off; [NEW GAME] to exit)
+- [NEW GAME][5] = Lamp Test (all on; [NEW GAME] to exit)
+- [NEW GAME][7] = set Electronic Team Names
+- [NEW GAME][8] = Precision Time Mode toggle
+
+ETN ENTRY (phone-style keypad):
+[7][7]=B, [8][8]=E, [7]=A, [6][6][6]=R, [1]=S
+[CLEAR] backs up; [ENTER] confirms. Font: 1=Condensed 2=Regular 3=Bold. Justify: 1=Left 2=Center 3=Right
+
+POWER: No power button. Plugged in = on. Unplug both cables when not in use.
+
+ANSWER FORMAT:
+- Be very brief and action-oriented
+- Number steps for procedures
+- Always write button names in [BRACKETS]
+- If not in the manual say: "That's not covered — call Electro-Mech at 800-445-7846"`;
+
+const msgsEl = document.getElementById('messages');
+const inputEl = document.getElementById('msg-input');
+const sendBtn = document.getElementById('send-btn');
+let history = [];
+let busy = false;
+
+function addMsg(role, text, typing) {
+  const row = document.createElement('div');
+  row.className = 'msg-row ' + role;
+  const av = document.createElement('div');
+  av.className = 'av ' + (role === 'assistant' ? 'bot' : 'usr');
+  av.textContent = role === 'assistant' ? 'SF' : 'You';
+  const bub = document.createElement('div');
+  bub.className = 'bubble ' + (role === 'assistant' ? 'bot' : 'usr');
+  if (typing) {
+    bub.innerHTML = '<div class="dot-typing"><span></span><span></span><span></span></div>';
+    row.id = 'typing-row';
+  } else {
+    bub.innerHTML = fmt(text);
+  }
+  row.appendChild(av);
+  row.appendChild(bub);
+  msgsEl.appendChild(row);
+  msgsEl.scrollTop = msgsEl.scrollHeight;
+  return row;
+}
+
+function fmt(t) {
+  t = t.replace(/\[([^\]]+)\]/g, '<kbd>$1</kbd>');
+  t = t.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  const lines = t.split('\n');
+  let html = '', inOl = false;
+  for (const line of lines) {
+    const m = line.match(/^(\d+)[.)]\s+(.+)/);
+    if (m) {
+      if (!inOl) { html += '<ol>'; inOl = true; }
+      html += '<li>' + m[2] + '</li>';
+    } else {
+      if (inOl) { html += '</ol>'; inOl = false; }
+      html += (line.trim() === '' ? '<br>' : line + '<br>');
+    }
+  }
+  if (inOl) html += '</ol>';
+  return html;
+}
+
+function askQ(q) {
+  if (busy) return;
+  inputEl.value = q;
+  sendMsg();
+}
+
+async function sendMsg() {
+  const text = inputEl.value.trim();
+  if (!text || busy) return;
+  inputEl.value = '';
+  inputEl.style.height = 'auto';
+  busy = true;
+  sendBtn.disabled = true;
+
+  addMsg('user', text);
+  history.push({ role: 'user', content: text });
+  const typingRow = addMsg('assistant', '', true);
+
+  try {
+    const res = await fetch(PROXY_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1000,
+        system: SYSTEM,
+        messages: history
+      })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error?.message || 'API error');
+    const reply = data.content.map(b => b.text || '').join('');
+    history.push({ role: 'assistant', content: reply });
+    typingRow.remove();
+    addMsg('assistant', reply);
+  } catch (e) {
+    typingRow.remove();
+    const row = document.createElement('div');
+    row.className = 'msg-row assistant';
+    row.innerHTML = '<div class="av bot">SF</div><div class="err-bubble">Could not reach the server — check your connection and try again.</div>';
+    msgsEl.appendChild(row);
+    history.pop();
+  }
+
+  busy = false;
+  sendBtn.disabled = false;
+  msgsEl.scrollTop = msgsEl.scrollHeight;
+}
+
+inputEl.addEventListener('input', function() {
+  this.style.height = 'auto';
+  this.style.height = Math.min(this.scrollHeight, 90) + 'px';
+});
+inputEl.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); }
+});
+
+addMsg('assistant', 'Ready to help! ⚾ Ask me anything about your Electro-Mech CX-402 Line-Score console — runs, innings, hits, errors, clock, team names, and more. Or tap a quick question below.');
+</script>
+</body>
+</html>
